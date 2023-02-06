@@ -1,0 +1,27 @@
+@import "@/assets/tailwind.scss";
+@import "@/assets/variable.scss";
+
+.base {
+  min-height: 100vh;
+  @apply dark:text-gray-100;
+  color: $black;
+  background: $background-color;
+}
+
+.dark {
+  @apply bg-gray-900 placeholder-gray-400 text-white;
+}
+
+.container-base {
+  @apply container mx-auto px-3 md:px-2 my-3;
+}
+
+header {
+  .container-base{
+    margin-top: 0;
+  }
+}
+
+input[type="text"] {
+  @apply bg-gray-100 text-gray-900  text-sm p-2.5 rounded border-b-2 dark:bg-gray-700 dark:text-amber-50 focus:border-orange-200 focus:border-orange-100;
+}
