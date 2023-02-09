@@ -83,6 +83,7 @@
 
 <script setup lang="ts">
 import ButtonComponent from "@/UI/ButtonCustom/ButtonCustom.vue";
+import { computed, ref } from "vue";
 
 const props = defineProps({
   enableAddItems: {
@@ -100,8 +101,6 @@ interface WishItem {
   name: string;
   completed: boolean;
 }
-
-import { computed, ref } from "vue";
 
 const titleInput = ref("");
 const wishesName = ref("");
