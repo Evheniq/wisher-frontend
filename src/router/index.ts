@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory } from "vue-router";
-import HomeView from "../views/HomeView.vue";
-import OtherWishListsView from "../views/OtherWishListsView.vue";
+import NotFound from "@/pages/NotFoundPage";
+import DefaultTemplate from "@/templates/DefaulTemplate";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -8,12 +8,20 @@ const router = createRouter({
     {
       path: "/",
       name: "home",
-      component: HomeView,
-    },
-    {
-      path: "/other-wish-lists",
-      name: "other-wish-lists",
-      component: OtherWishListsView,
+      component: DefaultTemplate,
+      children: [
+        {
+          name: "Home",
+          path: "",
+          component: () => import("@/pages/MainPage"),
+        },
+        // will match everything and put it under `$route.params.pathMatch`
+        {
+          name: "NotFound",
+          path: "/:pathMatch(.*)*",
+          component: NotFound,
+        },
+      ],
     },
   ],
 });
