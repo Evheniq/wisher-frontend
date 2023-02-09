@@ -5,7 +5,7 @@
     <a href="https://war.ukraine.ua/">
       <img
         class="w-4 inline-block"
-        src="../assets/flag-ukraine.png"
+        src="../../../../../assets/flag-ukraine.png"
         alt="flag-ukraine"
       />
     </a>
