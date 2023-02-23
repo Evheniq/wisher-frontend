@@ -22,9 +22,24 @@ const props = defineProps({
 @import "@/assets/variable.scss";
 
 .default-button {
-  @apply w-full focus:outline-none block text-white mx-auto focus:ring-4 focus:ring-yellow-300 font-medium text-sm px-5 py-2.5 dark:focus:ring-yellow-900;
+  @apply w-full
+  block
+  text-white
+  mx-auto
+  font-medium
+  text-sm
+  px-5
+  py-2.5
+
+  focus:outline-none
+  focus:ring-1
+  focus:ring-yellow-400
+
+  dark:focus:ring-1
+  dark:focus:ring-yellow-900;
+
   @include default-shadow;
-  @include primary-background;
+  @include primary-background-color;
 
   border-radius: $default-border-radius;
 

@@ -1,18 +1,17 @@
 <template>
   <footer>
     <span>Powered from independent </span>
-
     <a href="https://war.ukraine.ua/">
       <img
         class="w-4 inline-block"
-        src="../../../../../assets/flag-ukraine.png"
+        src="../../../../../../public/flag-ukraine.png"
         alt="flag-ukraine"
       />
     </a>
   </footer>
 </template>
 
-<script lang="ts" setup></script>
+<script lang="ts"></script>
 
 <style lang="scss" scoped>
 @import "@/assets/variable.scss";

@@ -8,7 +8,7 @@
   }
 }
 
-@mixin primary-background {
+@mixin primary-background-color {
   background-color: $primary-color;
 
   .dark & {
@@ -16,7 +16,7 @@
   }
 }
 
-@mixin primary-color {
+@mixin primary-text-color {
   color: $primary-color;
 
   .dark & {

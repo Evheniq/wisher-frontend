@@ -15,6 +15,12 @@ const router = createRouter({
           path: "",
           component: () => import("@/pages/MainPage"),
         },
+        {
+          name: "WishlistPage",
+          path: "wishitem",
+          component: () => import("@/pages/WishlistPage"),
+        },
+
         // will match everything and put it under `$route.params.pathMatch`
         {
           name: "NotFound",

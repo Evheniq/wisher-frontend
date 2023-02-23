@@ -4,7 +4,6 @@
       <HeaderComponent v-model:dark-mode="darkMode" />
       <RouterView></RouterView>
     </div>
-
     <FooterComponent />
   </div>
 </template>
@@ -26,29 +25,22 @@ onMounted(() => {
       darkMode.value = true;
       console.log("Dark mode from OS setting is: ", darkMode.value);
     }
-
-    return;
   }
 
   // Change darkMode model if state not same by default. We need this for fewer renders.
   const parsedDarkMode = !!JSON.parse(darkModeSaved);
   if (darkMode.value !== parsedDarkMode) {
     darkMode.value = parsedDarkMode;
-    console.log("darkMode from local storage: ", darkMode.value);
-    return;
   }
-
-  console.log("Same darkMode: ", darkMode.value);
 });
 
 watch(darkMode, () => {
   localStorage.setItem("darkMode", darkMode.value.toString());
-  console.log("darkMode saved to localStorage with value: ", darkMode.value);
 });
 </script>
 
 <style lang="scss">
 .top-wrapper {
-  min-height: calc(100vh - 44px);
+  min-height: calc(100vh - 144px);
 }
 </style>

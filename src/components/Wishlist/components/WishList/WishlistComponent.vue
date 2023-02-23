@@ -1,20 +1,20 @@
 <template>
-  <main @click.stop="selectWishItemInput">
+  <div @click.stop="selectWishItemInput(null)">
     <div class="container-base">
       <div class="wishlist">
         <h1 class="text-center">{{ props.title }}</h1>
-        <div class="title-input" v-if="props.enableAddItems">
-          <input
-            type="text"
-            placeholder="Write title here"
-            v-model="titleInput"
-          />
-        </div>
 
         <div class="wish-block wish-container">
-          <div class="wish-items-list" @click.stop>
+          <div class="wish-items-list">
             <div
-              v-if="wishItemsExist"
+              v-if="isLoadingItems && wishItemsExist"
+              class="left-position-wish-item wish-item text-center"
+            >
+              <font-awesome-icon icon="fas fa-spinner" class="fa-spin" />
+              <div class="separator"></div>
+            </div>
+            <div
+              v-if="!isLoadingItems && wishItemsExist"
               class="left-position-wish-item wish-item text-center"
             >
               No wishes yet
@@ -22,42 +22,46 @@
             </div>
             <template v-else>
               <div
-                v-for="wishItem in wishList"
+                v-for="wishItem in props.wishItems"
                 :key="wishItem.id"
                 class="wish-item"
+                :class="{ 'selected-item': wishItem.id == selectedWish }"
                 @click.stop="selectWishItemInput(wishItem.id)"
-                ref="itemRefs"
               >
                 <input type="checkbox" v-model="wishItem.completed" />
                 <span
                   class="checkmark"
                   @click.stop="wishItem.completed = !wishItem.completed"
                 ></span>
+
                 <div class="text">
+                  <span v-if="wishItem.id == selectedWish">
+                    <input type="text" v-model="wishItem.name" ref="itemRefs" />
+                  </span>
                   <span
-                    v-if="wishItem.id !== selectedWish"
-                    style="display: inline-block"
+                    v-else
+                    class="name"
                     :class="{ 'line-through': wishItem.completed }"
                   >
                     {{ wishItem.name }}
                   </span>
-                  <span v-else>
-                    <input type="text" v-model="wishItem.name" autofocus />
-                  </span>
                 </div>
+
                 <span
                   class="delete"
                   @click="deleteWishItem(wishItem.id)"
-                  v-if="props.enableAddItems"
+                  v-if="props.enableEditingWishes"
                 >
                   <font-awesome-icon icon="fa-solid fa-xmark" class="icon" />
                 </span>
+
                 <div class="separator"></div>
               </div>
             </template>
-            <div class="separator" v-if="props.enableAddItems"></div>
+            <div class="separator" v-if="props.enableEditingWishes"></div>
           </div>
-          <template v-if="props.enableAddItems">
+
+          <template v-if="props.enableEditingWishes">
             <input
               class="w-10/12"
               type="text"
@@ -73,20 +77,20 @@
             </span>
           </template>
         </div>
-        <div class="wish-container" v-if="props.enableAddItems">
-          <ButtonComponent text="Share" :disabled="!wishList.length" />
-        </div>
       </div>
     </div>
-  </main>
+  </div>
 </template>
 
 <script setup lang="ts">
-import ButtonComponent from "@/UI/ButtonCustom/ButtonCustom.vue";
-import { computed, ref } from "vue";
+import { computed, ref, watch } from "vue";
+import type { PropType } from "vue";
+import type { IWishItem } from "@/components/Wishlist";
+
+const emit = defineEmits(["update:wishItems"]);
 
 const props = defineProps({
-  enableAddItems: {
+  enableEditingWishes: {
     type: Boolean,
     default: false,
   },
@@ -94,50 +98,58 @@ const props = defineProps({
     type: String,
     require: true,
   },
+  wishItems: {
+    type: Array as PropType<Array<IWishItem>>,
+    required: true,
+  },
+  isLoadingItems: {
+    type: Boolean,
+    default: false,
+  },
 });
 
-interface WishItem {
-  id: number;
-  name: string;
-  completed: boolean;
-}
-
-const titleInput = ref("");
 const wishesName = ref("");
-const selectedWish = ref<number | null>();
-const itemRefs = ref([]);
-let wishList = ref([
-  { id: 1, name: "car", completed: false },
-  { id: 2, name: "car", completed: false },
-]);
+const selectedWish = ref<number | null>(null);
+const itemRefs = ref<HTMLElement[] | null>(null);
 
 function addItem() {
   if (wishesName.value.length < 3) {
     return;
   }
 
-  wishList.value.push({
-    id: Date.now(),
-    name: wishesName.value,
-    completed: false,
-  });
+  emit("update:wishItems", [
+    ...props.wishItems,
+    {
+      id: Date.now(),
+      name: wishesName.value,
+      completed: false,
+    },
+  ]);
 
   wishesName.value = "";
 }
 
 function deleteWishItem(idItem: number) {
-  wishList.value = wishList.value.filter((wishItem: WishItem) => {
-    return wishItem.id !== idItem;
-  });
+  const clearedWishItems = props.wishItems?.filter(
+    (item) => item.id !== idItem
+  );
+
+  emit("update:wishItems", clearedWishItems);
 }
 
 function selectWishItemInput(idItem: number | null) {
-  if (props.enableAddItems) {
+  if (props.enableEditingWishes) {
     selectedWish.value = idItem;
   }
 }
 
-const wishItemsExist = computed<Boolean>(() => !wishList.value.length);
+const wishItemsExist = computed<Boolean>(() => !props.wishItems.length);
+
+watch(selectedWish, () => {
+  itemRefs.value?.forEach((el) => {
+    el.focus();
+  });
+});
 
 // TODO: fix plroblem with double click on wishitem text
 // onMounted(() => console.log(itemRefs.value));
@@ -149,26 +161,16 @@ const wishItemsExist = computed<Boolean>(() => !wishList.value.length);
 @import "@/assets/variable.scss";
 @import "@/assets/mixins.scss";
 
-main {
-  min-height: calc(100vh - 40px);
-}
-
 .wishlist {
-  padding: 5% 0;
+  //padding: 5% 0;
 
   h1 {
     @apply text-2xl font-medium;
   }
 
-  .title-input {
-    @apply mt-3 text-center;
-    input {
-      @apply text-center mx-auto w-full;
-      max-width: 300px;
-    }
-  }
-
   .wish-item-add-btn {
+    @include primary-background-color;
+
     display: inline-block;
     cursor: pointer;
     width: 37px;
@@ -177,8 +179,6 @@ main {
     line-height: 35px;
     margin-top: 10px;
     margin-left: 10px;
-
-    @include primary-background;
 
     @media screen and (max-width: 768px) {
       width: 35px;
@@ -205,9 +205,9 @@ main {
 
   &-block {
     @apply my-6 dark:bg-gray-800;
+    @include default-shadow;
 
     background: $white;
-    @include default-shadow;
     border-radius: 15px;
     padding: 20px 24px;
 
@@ -221,7 +221,7 @@ main {
     position: relative;
     padding-left: 35px;
     margin-bottom: 12px;
-    font-size: 22px;
+    font-size: 20px;
     cursor: text;
 
     &:hover {
@@ -254,6 +254,13 @@ main {
       }
     }
 
+    .name {
+      overflow: hidden;
+      display: -webkit-box;
+      -webkit-line-clamp: 1;
+      -webkit-box-orient: vertical;
+    }
+
     input[type="checkbox"] {
       position: absolute;
       opacity: 0;
@@ -263,7 +270,7 @@ main {
     }
 
     input[type="text"] {
-      @apply dark:bg-gray-800 border-0 w-5/6 p-0;
+      @apply dark:bg-gray-700 border-amber-200 w-10/12 p-2 dark:border-orange-50 border outline-0;
       font-size: 22px;
     }
 
@@ -292,7 +299,7 @@ main {
     .checkmark {
       border-radius: 30px;
       position: absolute;
-      top: 5px;
+      top: 2px;
       left: 0;
       height: 27px;
       width: 27px;
@@ -320,5 +327,13 @@ main {
       }
     }
   }
+}
+
+.selected-item .checkmark {
+  top: 13px;
+}
+
+.selected-item .delete {
+  top: 9px;
 }
 </style>

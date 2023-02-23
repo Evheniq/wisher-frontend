@@ -2,12 +2,12 @@
   <div class="logo-block">
     <RouterLink to="/">
       <img
-        src="../../../../../assets/logo.png"
+        src="../../../../../../public/logo.png"
         alt="logo"
         class="block dark:hidden"
       />
       <img
-        src="../../../../../assets/logo-dark.png"
+        src="../../../../../../public/logo-dark.png"
         alt="logo"
         class="hidden dark:block"
       />
